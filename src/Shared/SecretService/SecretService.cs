@@ -1,7 +1,6 @@
 ﻿using System;
 using Azure.Identity;
-using Azure.Security.KeyVault.Keys;
-using Microsoft.Azure.Services.AppAuthentication;
+using Azure.Security.KeyVault.Secrets;
 
 namespace Shared.SecretService
 {
@@ -21,9 +20,9 @@ namespace Shared.SecretService
 
         public string GetSecret(string keyName)
         {
-            var client = new KeyClient(new Uri(_vaultUrl), new DefaultAzureCredential());
+            var client = new SecretClient(new Uri(_vaultUrl), new DefaultAzureCredential());
 
-            return client.VaultUri == null ? null : client.GetKey(keyName).ToString();
+            return client.VaultUri == null ? null : client.GetSecret(keyName).Value.Value;
         }
 
     }

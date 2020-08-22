@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DiscordService\DiscordService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SecretService\SecretService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TwitterApiService\TwitterApiService.cs" />
   </ItemGroup>
 </Project>

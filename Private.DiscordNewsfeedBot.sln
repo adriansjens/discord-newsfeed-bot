@@ -5,12 +5,12 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManUtdBot.Functions", "src\ManUtdBot.Functions\ManUtdBot.Functions.csproj", "{AF848627-7AF7-497B-B516-F9B448B0711E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared1\Shared.shproj", "{6407E128-DE50-4B89-BEBE-FE34B05B7B82}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "src\Shared\Shared.shproj", "{6407E128-DE50-4B89-BEBE-FE34B05B7B82}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared1\Shared1.projitems*{6407e128-de50-4b89-bebe-fe34b05b7b82}*SharedItemsImports = 13
-		Shared1\Shared1.projitems*{af848627-7af7-497b-b516-f9b448b0711e}*SharedItemsImports = 5
+		src\Shared\Shared1.projitems*{6407e128-de50-4b89-bebe-fe34b05b7b82}*SharedItemsImports = 13
+		src\Shared\Shared1.projitems*{af848627-7af7-497b-b516-f9b448b0711e}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
