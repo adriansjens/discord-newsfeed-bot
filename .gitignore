@@ -57,8 +57,10 @@ dlldata.c
 BenchmarkDotNet.Artifacts/
 
 # .NET Core
+local.setting.json
 project.lock.json
 project.fragment.lock.json
+Properties/
 artifacts/
 
 # StyleCop
