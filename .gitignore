@@ -57,10 +57,10 @@ dlldata.c
 BenchmarkDotNet.Artifacts/
 
 # .NET Core
-local.setting.json
+local.settings.json
 project.lock.json
 project.fragment.lock.json
-Properties/
+src/ManUtdBot.Functions/Properties/
 artifacts/
 
 # StyleCop
@@ -350,3 +350,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+src/ManUtdBot.Functions/local.settings.json
