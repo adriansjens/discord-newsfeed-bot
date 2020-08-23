@@ -2,11 +2,11 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 
-namespace Shared.SecretService
+namespace Shared.Services.SecretService
 {
     public interface ISecretService
     {
-        string GetSecret(string keyName);
+        string GetSecret(string secretName);
     }
 
     public class SecretService : ISecretService
@@ -18,12 +18,13 @@ namespace Shared.SecretService
             _vaultUrl = vaultUrl;
         }
 
-        public string GetSecret(string keyName)
+        public string GetSecret(string secretName)
         {
             var client = new SecretClient(new Uri(_vaultUrl), new DefaultAzureCredential());
 
-            return client.VaultUri == null ? null : client.GetSecret(keyName).Value.Value;
-        }
+            var secret = client.GetSecret(secretName);
 
+            return secret?.Value.Value;
+        }
     }
 }

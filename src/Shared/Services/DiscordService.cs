@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus;
 
-namespace Shared.DiscordService
+namespace Shared.Services.DiscordService
 {
     public class DiscordService
     {
@@ -23,6 +23,8 @@ namespace Shared.DiscordService
 
         public async Task SendMessage(ulong channelId, string message)
         {
+            if (message == null) return;
+
             await _discordClient.SendMessageAsync(await _discordClient.GetChannelAsync(channelId), message);
 
             await _discordClient.ConnectAsync();

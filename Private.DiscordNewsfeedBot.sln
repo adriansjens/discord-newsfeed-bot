@@ -5,13 +5,9 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManUtdBot.Functions", "src\ManUtdBot.Functions\ManUtdBot.Functions.csproj", "{AF848627-7AF7-497B-B516-F9B448B0711E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "src\Shared\Shared.shproj", "{6DA45CE1-0175-431B-9B64-3EBD1FA6B1BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared1\Shared.csproj", "{CE32D998-EE8C-470C-800A-EA13D2425E34}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\Shared\Shared.projitems*{6da45ce1-0175-431b-9b64-3ebd1fa6b1ba}*SharedItemsImports = 13
-		src\Shared\Shared.projitems*{af848627-7af7-497b-b516-f9b448b0711e}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -21,6 +17,10 @@ Global
 		{AF848627-7AF7-497B-B516-F9B448B0711E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF848627-7AF7-497B-B516-F9B448B0711E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF848627-7AF7-497B-B516-F9B448B0711E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE32D998-EE8C-470C-800A-EA13D2425E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE32D998-EE8C-470C-800A-EA13D2425E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE32D998-EE8C-470C-800A-EA13D2425E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE32D998-EE8C-470C-800A-EA13D2425E34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

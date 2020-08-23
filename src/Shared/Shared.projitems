@@ -9,8 +9,11 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)DiscordService\DiscordService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SecretService\SecretService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TwitterApiService\TwitterApiService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\DiscordService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SecretService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\TwitterApiService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
   </ItemGroup>
 </Project>

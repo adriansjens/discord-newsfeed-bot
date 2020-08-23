@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using ManUtdBot.Functions.Sync;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -14,20 +15,21 @@ namespace ManUtdBot.Functions
             _services = services;
         }
 
-        [FunctionName("Function1")]
+        [FunctionName("SyncNewsfeed")]
         public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo myTimer, ILogger log)
         {
             try
             {
-                var botService = new BotService.BotService(_services);
+                var botService = new BotService(_services);
 
                 await botService.Sync();
 
-                log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+                log.LogInformation($"ManUtd newsfeed sync function executed at: {DateTime.Now}");
             }
+
             catch (Exception e)
             {
-                
+                log.LogInformation(e.InnerException?.Message, e.StackTrace);
             }
         }
     }
