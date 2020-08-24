@@ -2,13 +2,13 @@
 
 namespace Shared.Models
 {
-    public class UserTweetList
+    public class UserTimeline
     {
-        public List<Tweet> Tweets { get; set; }
+        public List<TimelineTweet> Tweets { get; set; }
         public User User { get; set; }
     }
 
-    public class Tweet
+    public class TimelineTweet
     {
         public string CreatedAt { get; set; }
         public long Id { get; set; }
@@ -44,5 +44,16 @@ namespace Shared.Models
     {
         public long Id { get; set; }
         public long IdStr { get; set; }
+    }
+
+    public class DetailedTweetList
+    {
+        public List<DetailedTweet> Data { get; set; }
+    }
+
+    public class DetailedTweet
+    {
+        public string Id { get; set; }
+        public string Text { get; set; }
     }
 }

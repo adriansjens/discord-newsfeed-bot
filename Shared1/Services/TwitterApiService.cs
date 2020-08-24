@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,7 +12,8 @@ namespace Shared.Services
 {
     public interface ITwitterApiService
     {
-        Task<List<UserTweetList>> GetNewsfeed(List<string> twitterUserList);
+        Task<List<UserTimeline>> GetTimeline(List<string> twitterUserList);
+        Task<List<DetailedTweet>> GetDetailedTweets(List<string> ids);
         void SetAuthHeader(string token);
     }
 
@@ -27,23 +28,23 @@ namespace Shared.Services
             _cache = cache;
         }
 
-        public async Task<List<UserTweetList>> GetNewsfeed(List<string> twitterUserList)
+        public async Task<List<UserTimeline>> GetTimeline(List<string> twitterUserList)
         {
-            var results = new List<UserTweetList>();
+            var results = new List<UserTimeline>();
             foreach (var userId in twitterUserList)
             {
                 var lastSyncedTweetId = await _cache.GetStringAsync($"since_id_for_{userId}");
                 var endpoint = lastSyncedTweetId == null 
-                    ? $"statuses/user_timeline.json?screen_name={userId}&count=20" 
-                    : $"statuses/user_timeline.json?screen_name={userId}&since_id={lastSyncedTweetId}";
+                    ? $"1.1/statuses/user_timeline.json?screen_name={userId}&count=50" 
+                    : $"1.1/statuses/user_timeline.json?screen_name={userId}&since_id={lastSyncedTweetId}";
 
                 var response = await _httpClient.GetAsync(endpoint);
 
                 if (!response.IsSuccessStatusCode) continue;
                 var tweetList =
-                    JsonConvert.DeserializeObject<List<Tweet>>(response.Content.ReadAsStringAsync().Result);
+                    JsonConvert.DeserializeObject<List<TimelineTweet>>(response.Content.ReadAsStringAsync().Result);
 
-                results.Add(new UserTweetList
+                results.Add(new UserTimeline
                 {
                     User = tweetList.FirstOrDefault()?.User,
                     Tweets = tweetList
@@ -53,6 +54,42 @@ namespace Shared.Services
             }
 
             return results;
+        }
+
+        public async Task<List<DetailedTweet>> GetDetailedTweets(List<string> ids)
+        {
+            var result = new List<DetailedTweet>();
+
+            var requestIdString = string.Join(",", ids.Take(100));
+            var endpoint = $"2/tweets?ids={requestIdString}";
+
+            var response = await _httpClient.GetAsync(endpoint);
+
+            if (!response.IsSuccessStatusCode) return new List<DetailedTweet>();
+
+            result.AddRange(JsonConvert
+                .DeserializeObject<DetailedTweetList>(response.Content.ReadAsStringAsync().Result).Data);
+
+            if (ids.Count <= 100) return result;
+
+            var pagesToRequest = Math.Ceiling(ids.Count / 100.0);
+            for (var i = 1; i < pagesToRequest; i++)
+            {
+                ids.RemoveRange(0, 100);
+                var newRequestList = ids.Take(100);
+
+                var pagingRequestIdString = string.Join(",", newRequestList);
+                var pagingEndpoint = $"2/tweets?ids={pagingRequestIdString}";
+
+                var pagingResponse = await _httpClient.GetAsync(pagingEndpoint);
+
+                if (!response.IsSuccessStatusCode) break;
+
+                result.AddRange(JsonConvert
+                    .DeserializeObject<DetailedTweetList>(pagingResponse.Content.ReadAsStringAsync().Result).Data);
+            }
+
+            return result;
         }
 
         public void SetAuthHeader(string token)

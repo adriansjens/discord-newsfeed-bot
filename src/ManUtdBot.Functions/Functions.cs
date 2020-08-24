@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using ManUtdBot.Functions.Sync;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -20,9 +19,9 @@ namespace ManUtdBot.Functions
         {
             try
             {
-                var botService = new BotService(_services);
+                var botService = new Sync.Sync(_services);
 
-                await botService.Sync();
+                await botService.SyncData();
 
                 log.LogInformation($"ManUtd newsfeed sync function executed at: {DateTime.Now}");
             }

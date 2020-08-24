@@ -5,7 +5,7 @@ namespace Shared.Services
 {
     public interface IDiscordService
     {
-        void InitializeClient(string token);
+        void SetBotAuth(string token);
         Task SendMessage(ulong channelId, string message);
     }
 
@@ -13,7 +13,7 @@ namespace Shared.Services
     {
         private DiscordClient _discordClient;
 
-        public void InitializeClient(string token)
+        public void SetBotAuth(string token)
         {
             _discordClient = new DiscordClient(new DiscordConfiguration
             {
@@ -26,9 +26,8 @@ namespace Shared.Services
         {
             if (message == null) return;
 
-
-            await _discordClient.ConnectAsync();
             await _discordClient.SendMessageAsync(await _discordClient.GetChannelAsync(channelId), message);
+            await _discordClient.ConnectAsync();
         }
     }
     

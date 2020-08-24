@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using Shared.Services;
-
 [assembly: FunctionsStartup(typeof(Startup))]
 
 
