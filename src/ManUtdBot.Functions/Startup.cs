@@ -36,6 +36,7 @@ namespace ManUtdBot.Functions
             builder.Services.AddSingleton<ISecretService, SecretService>(provider =>
             {
                 var azureKeyVaultUrl = configuration["AzureKeyVault"];
+                //var azureCredentials = new DefaultAzureCredentialOptions();
                 return new SecretService(new SecretClient(new Uri(azureKeyVaultUrl), new DefaultAzureCredential()));
             });
 

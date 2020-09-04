@@ -15,11 +15,11 @@ namespace ManUtdBot.Functions
         }
 
         [FunctionName("SyncNewsfeed")]
-        public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo myTimer, ILogger log)
+        public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
         {
             try
             {
-                var botService = new Sync.Sync(_services);
+                var botService = new BotSyncService.Sync(_services);
 
                 await botService.SyncData();
 

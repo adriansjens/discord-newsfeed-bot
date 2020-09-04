@@ -12,8 +12,9 @@ namespace Shared.Services
 {
     public interface ITwitterApiService
     {
-        Task<List<UserTimeline>> GetTimeline(List<string> twitterUserList);
+        Task<List<UserTimeline>> GetTimelines(List<string> twitterUserList);
         Task<List<DetailedTweet>> GetDetailedTweets(List<string> ids);
+        List<string> GetTweetUrls(List<TimelineTweet> tweets);
         void SetAuthHeader(string token);
     }
 
@@ -28,14 +29,14 @@ namespace Shared.Services
             _cache = cache;
         }
 
-        public async Task<List<UserTimeline>> GetTimeline(List<string> twitterUserList)
+        public async Task<List<UserTimeline>> GetTimelines(List<string> twitterUserList)
         {
             var results = new List<UserTimeline>();
             foreach (var userId in twitterUserList)
             {
                 var lastSyncedTweetId = await _cache.GetStringAsync($"since_id_for_{userId}");
                 var endpoint = lastSyncedTweetId == null 
-                    ? $"1.1/statuses/user_timeline.json?screen_name={userId}&count=50" 
+                    ? $"1.1/statuses/user_timeline.json?screen_name={userId}&count=3" 
                     : $"1.1/statuses/user_timeline.json?screen_name={userId}&since_id={lastSyncedTweetId}";
 
                 var response = await _httpClient.GetAsync(endpoint);
@@ -50,7 +51,7 @@ namespace Shared.Services
                     Tweets = tweetList
                 });
 
-                await _cache.SetStringAsync($"since_id_for_{userId}", tweetList.FirstOrDefault()?.Id.ToString());
+                await _cache.SetStringAsync($"since_id_for_{userId}", tweetList.FirstOrDefault()?.Id);
             }
 
             return results;
@@ -90,6 +91,11 @@ namespace Shared.Services
             }
 
             return result;
+        }
+
+        public List<string> GetTweetUrls(List<TimelineTweet> tweets)
+        {
+            return tweets.Select(tweet => $"https://twitter.com/{tweet.User.ScreenName}/status/{tweet.Id}").ToList();
         }
 
         public void SetAuthHeader(string token)

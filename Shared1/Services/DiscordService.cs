@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 
 namespace Shared.Services
@@ -6,7 +8,7 @@ namespace Shared.Services
     public interface IDiscordService
     {
         void SetBotAuth(string token);
-        Task SendMessage(ulong channelId, string message);
+        Task SendMessagesToNewsfeed(List<string> messages);
     }
 
     public class DiscordService : IDiscordService
@@ -18,16 +20,31 @@ namespace Shared.Services
             _discordClient = new DiscordClient(new DiscordConfiguration
             {
                 Token = token,
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                AutoReconnect = true
             });
         }
 
-        public async Task SendMessage(ulong channelId, string message)
+        public async Task SendMessagesToNewsfeed(List<string> messages)
         {
-            if (message == null) return;
+            if (messages == null) return;
 
-            await _discordClient.SendMessageAsync(await _discordClient.GetChannelAsync(channelId), message);
+            _discordClient.GuildAvailable += async r =>
+            {
+                foreach (var server in r.Client.Guilds)
+                {
+                    var channel = server.Value.Channels.FirstOrDefault(x => x.Name == "twitter-newsfeed");
+                    if (channel == null) continue;
+
+                    foreach (var message in messages)
+                    {
+                        await _discordClient.SendMessageAsync(channel, message);
+                    }
+                }
+            };
+
             await _discordClient.ConnectAsync();
+            await Task.Delay(-1);
         }
     }
     

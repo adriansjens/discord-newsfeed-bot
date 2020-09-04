@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ManUtdBot.Functions.Sync.FilterService;
+using ManUtdBot.Functions.BotSyncService.FilterService;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Services;
 
-namespace ManUtdBot.Functions.Sync
+namespace ManUtdBot.Functions.BotSyncService
 {
     public class Sync
     {
@@ -31,16 +31,22 @@ namespace ManUtdBot.Functions.Sync
             var twitterUsers = filterService.GetTwitterUsers().TwitterUsers;
 
             _twitterApiService.SetAuthHeader(twitterApiToken);
-            var userTweetsList = await _twitterApiService.GetTimeline(twitterUsers);
+            var userTweetsList = await _twitterApiService.GetTimelines(twitterUsers);
 
-            var ids = userTweetsList.SelectMany(x => x.Tweets.Select(y => y.Id.ToString())).ToList();
+            if (userTweetsList.Count == 0) return; 
 
-            var detailedTweets = await _twitterApiService.GetDetailedTweets(ids);
-            var result = filterService.GetMatchedTweetIds(detailedTweets);
+            var allUsersTimelineTweets = userTweetsList.SelectMany(x => x.Tweets.Select(y => y)).ToList();
+
+            var detailedTweets = await _twitterApiService.GetDetailedTweets(allUsersTimelineTweets.Select(x => x.Id).ToList());
+            var idsOfMatchedTweets = filterService.GetMatchedTweetIds(detailedTweets);
+
+            if (idsOfMatchedTweets.Count == 0) return;
+
+            var result = allUsersTimelineTweets.Select(y => y).Where(x => idsOfMatchedTweets.Contains(x.Id)).ToList();
+            var tweetUrls = _twitterApiService.GetTweetUrls(result);
 
             _discordService.SetBotAuth(botToken);
-            await _discordService.SendMessage(746284695859232771,
-                userTweetsList.FirstOrDefault()?.Tweets.FirstOrDefault()?.Text);
+            await _discordService.SendMessagesToNewsfeed(tweetUrls);
         }
     }
 }

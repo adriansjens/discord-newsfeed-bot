@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Shared.Models
 {
@@ -11,31 +12,29 @@ namespace Shared.Models
     public class TimelineTweet
     {
         public string CreatedAt { get; set; }
-        public long Id { get; set; }
+        public string Id { get; set; }
         public string IdStr { get; set; }
         public string Text { get; set; }
         public bool Truncated { get; set; }
         public Entities Entities { get; set; }
         public string Source { get; set; }
-        public double InReplyToStatusId { get; set; }
-        public string InReplyToStatusIdStr { get; set; }
-        public long InReplyToUserId { get; set; }
-        public string InReplyToUserIdStr { get; set; }
-        public string InReplyToScreenName { get; set; }
         public User User { get; set; }
         public string Lang { get; set; }
     }
 
     public class Entities
     {
+        [JsonProperty("user_mentions")]
         public List<UserMention> UserMentions { get; set; }
     }
 
     public class UserMention
     {
+        [JsonProperty("screen_name")]
         public string ScreenName { get; set; }
         public string Name { get; set; }
         public long Id { get; set; }
+        [JsonProperty("id_str")]
         public string IdStr { get; set; }
         public List<long> Indices { get; set; }
     }
@@ -43,7 +42,10 @@ namespace Shared.Models
     public class User
     {
         public long Id { get; set; }
+        [JsonProperty("id_str")]
         public long IdStr { get; set; }
+        [JsonProperty("screen_name")]
+        public string ScreenName { get; set; }
     }
 
     public class DetailedTweetList

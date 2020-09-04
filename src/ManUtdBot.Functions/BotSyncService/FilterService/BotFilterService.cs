@@ -6,16 +6,15 @@ using ManUtdBot.Functions.Models;
 using Newtonsoft.Json;
 using Shared.Models;
 
-namespace ManUtdBot.Functions.Sync.FilterService
+namespace ManUtdBot.Functions.BotSyncService.FilterService
 {
     public class BotFilterService
     {
         public List<string> GetMatchedTweetIds(List<DetailedTweet> detailedTweets)
         {
-            var file = new StreamReader("Sync/FilterService/KeyPhrasesFilter.json").ReadToEnd();
+            var file = new StreamReader("BotSyncService/FilterService/KeyPhrasesFilter.json").ReadToEnd();
 
             var filter = JsonConvert.DeserializeObject<FilterModel>(file);
-
             var filterString = $"(?i)\\b{string.Join("\\b|\\b", filter.FilterList.Concat(filter.PlayerFilterList))}\\b";
 
             var matches = new List<string>();
@@ -33,7 +32,7 @@ namespace ManUtdBot.Functions.Sync.FilterService
 
         public TwitterUserList GetTwitterUsers()
         {
-            var file = new StreamReader("Sync/FilterService/TwitterUsers.json").ReadToEnd();
+            var file = new StreamReader("BotSyncService/FilterService/TwitterUsers.json").ReadToEnd();
 
             return JsonConvert.DeserializeObject<TwitterUserList>(file);
         }
