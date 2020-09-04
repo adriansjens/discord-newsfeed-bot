@@ -1,8 +1,6 @@
-﻿using System;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+﻿using Azure.Security.KeyVault.Secrets;
 
-namespace Shared.Services.SecretService
+namespace Shared.Services
 {
     public interface ISecretService
     {
@@ -11,18 +9,16 @@ namespace Shared.Services.SecretService
 
     public class SecretService : ISecretService
     {
-        private readonly string _vaultUrl;
+        private readonly SecretClient _client;
 
-        public SecretService(string vaultUrl)
+        public SecretService(SecretClient client)
         {
-            _vaultUrl = vaultUrl;
+            _client = client;
         }
 
         public string GetSecret(string secretName)
         {
-            var client = new SecretClient(new Uri(_vaultUrl), new DefaultAzureCredential());
-
-            var secret = client.GetSecret(secretName);
+            var secret = _client.GetSecret(secretName);
 
             return secret?.Value.Value;
         }
