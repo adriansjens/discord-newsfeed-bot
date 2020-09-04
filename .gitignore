@@ -57,8 +57,10 @@ dlldata.c
 BenchmarkDotNet.Artifacts/
 
 # .NET Core
+local.settings.json
 project.lock.json
 project.fragment.lock.json
+src/ManUtdBot.Functions/Properties/
 artifacts/
 
 # StyleCop
@@ -92,6 +94,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+app.config
+packages.config
 
 # Chutzpah Test files
 _Chutzpah*
@@ -348,3 +352,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+src/ManUtdBot.Functions/local.settings.json
