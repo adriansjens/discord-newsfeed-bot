@@ -18,7 +18,6 @@ namespace Shared.Services
 
         public string GetSecret(string secretName)
         {
-
             var secret = _client.GetSecret(secretName);
 
             return secret?.Value.Value;

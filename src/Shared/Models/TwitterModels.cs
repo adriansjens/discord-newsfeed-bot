@@ -11,8 +11,10 @@ namespace Shared.Models
 
     public class TimelineTweet
     {
+        [JsonProperty("created_at")]
         public string CreatedAt { get; set; }
         public string Id { get; set; }
+        [JsonProperty("id_str")]
         public string IdStr { get; set; }
         public string Text { get; set; }
         public bool Truncated { get; set; }

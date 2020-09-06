@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Shared.Services;
 
 namespace ManUtdBot.Functions
 {
@@ -10,25 +13,34 @@ namespace ManUtdBot.Functions
         private readonly IServiceProvider _services;
 
         public ManUtdBot(IServiceProvider services)
-        {
+        { 
             _services = services;
         }
 
         [FunctionName("SyncNewsfeed")]
-        public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
+        public async Task SyncNewsfeed([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer, ILogger log, 
+            ExecutionContext context)
         {
+            var secretService = _services.GetRequiredService<ISecretService>();
+            var botToken = secretService.GetSecret("discord-bot-client-secret-manutd");
+
+            var discordService = _services.GetRequiredService<IDiscordService>();
+            discordService.SetBotAuth(botToken);
+
             try
             {
-                var botService = new BotSyncService.Sync(_services);
+                await discordService.SendMessageToLogChannel(new List<string> {"Executing SyncNewsfeed for ManUtdBot"});
 
-                await botService.SyncData();
+                var twitterService = _services.GetRequiredService<ITwitterApiService>();
+                var botService = new BotSyncService.Sync(twitterService, secretService, discordService);
 
-                log.LogInformation($"ManUtd newsfeed sync function executed at: {DateTime.Now}");
+                await botService.SyncData(context);
             }
 
             catch (Exception e)
             {
-                log.LogInformation(e.InnerException?.Message, e.StackTrace);
+                await discordService.SendMessageToLogChannel(
+                    new List<string> {"Sync newsfeed", e.StackTrace, e.Message});
             }
         }
     }

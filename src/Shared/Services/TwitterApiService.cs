@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Shared.Models;
 
@@ -14,16 +13,16 @@ namespace Shared.Services
     {
         Task<List<UserTimeline>> GetTimelines(List<string> twitterUserList);
         Task<List<DetailedTweet>> GetDetailedTweets(List<string> ids);
-        List<string> GetTweetUrls(List<TimelineTweet> tweets);
+        string GetTweetUrl(TimelineTweet tweet);
         void SetAuthHeader(string token);
     }
 
     public class TwitterApiService : ITwitterApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
 
-        public TwitterApiService(HttpClient httpClient, IDistributedCache cache)
+        public TwitterApiService(HttpClient httpClient, ICacheService cache)
         {
             _httpClient = httpClient;
             _cache = cache;
@@ -34,9 +33,9 @@ namespace Shared.Services
             var results = new List<UserTimeline>();
             foreach (var userId in twitterUserList)
             {
-                var lastSyncedTweetId = await _cache.GetStringAsync($"since_id_for_{userId}");
+                var lastSyncedTweetId = _cache.Get($"since_id_for_{userId}");
                 var endpoint = lastSyncedTweetId == null 
-                    ? $"1.1/statuses/user_timeline.json?screen_name={userId}&count=3" 
+                    ? $"1.1/statuses/user_timeline.json?screen_name={userId}&count=10" 
                     : $"1.1/statuses/user_timeline.json?screen_name={userId}&since_id={lastSyncedTweetId}";
 
                 var response = await _httpClient.GetAsync(endpoint);
@@ -45,15 +44,16 @@ namespace Shared.Services
                 var tweetList =
                     JsonConvert.DeserializeObject<List<TimelineTweet>>(response.Content.ReadAsStringAsync().Result);
 
+                if (!tweetList.Any()) continue;
+
                 results.Add(new UserTimeline
                 {
                     User = tweetList.FirstOrDefault()?.User,
                     Tweets = tweetList
                 });
 
-                await _cache.SetStringAsync($"since_id_for_{userId}", tweetList.FirstOrDefault()?.Id);
+                _cache.Set($"since_id_for_{userId}", tweetList.FirstOrDefault()?.Id);
             }
-
             return results;
         }
 
@@ -93,9 +93,9 @@ namespace Shared.Services
             return result;
         }
 
-        public List<string> GetTweetUrls(List<TimelineTweet> tweets)
+        public string GetTweetUrl(TimelineTweet tweet)
         {
-            return tweets.Select(tweet => $"https://twitter.com/{tweet.User.ScreenName}/status/{tweet.Id}").ToList();
+            return $"https://twitter.com/{tweet.User.ScreenName}/status/{tweet.Id}";
         }
 
         public void SetAuthHeader(string token)

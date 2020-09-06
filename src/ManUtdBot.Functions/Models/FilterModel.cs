@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ManUtdBot.Functions.Models
 {
@@ -10,6 +11,9 @@ namespace ManUtdBot.Functions.Models
 
     public class TwitterUserList
     {
-        public List<string> TwitterUsers { get; set; }
+        public List<string> Tier1 { get; set; }
+        public List<string> Tier2 { get; set; }
+        public List<string> Tier3 { get; set; }
+        public List<string> Tier4 { get; set; }
     }
 }

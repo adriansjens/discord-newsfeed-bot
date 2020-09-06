@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ManUtdBot.Functions.Models;
+using Microsoft.Azure.WebJobs;
 using Newtonsoft.Json;
 using Shared.Models;
 
@@ -10,9 +11,10 @@ namespace ManUtdBot.Functions.BotSyncService.FilterService
 {
     public class BotFilterService
     {
-        public List<string> GetMatchedTweetIds(List<DetailedTweet> detailedTweets)
+        public List<string> GetMatchedTweetIds(List<DetailedTweet> detailedTweets, ExecutionContext context)
         {
-            var file = new StreamReader("BotSyncService/FilterService/KeyPhrasesFilter.json").ReadToEnd();
+            var file = new StreamReader(context.FunctionAppDirectory +
+                                        "/BotSyncService/FilterService/KeyPhrasesFilter.json").ReadToEnd();
 
             var filter = JsonConvert.DeserializeObject<FilterModel>(file);
             var filterString = $"(?i)\\b{string.Join("\\b|\\b", filter.FilterList.Concat(filter.PlayerFilterList))}\\b";
@@ -30,11 +32,20 @@ namespace ManUtdBot.Functions.BotSyncService.FilterService
             return matches;
         }
 
-        public TwitterUserList GetTwitterUsers()
+        public Dictionary<string, string> GetTwitterUsers(ExecutionContext context)
         {
-            var file = new StreamReader("BotSyncService/FilterService/TwitterUsers.json").ReadToEnd();
+            var binDirectory = context.FunctionAppDirectory + "/BotSyncService/FilterService/TwitterUsers.json";
+            var file = new StreamReader(binDirectory).ReadToEnd();
 
-            return JsonConvert.DeserializeObject<TwitterUserList>(file);
+            var twitterUserList = JsonConvert.DeserializeObject<TwitterUserList>(file);
+            var dict = new Dictionary<string, string>();
+
+            twitterUserList.Tier1.ForEach(x => dict.Add(x, "(Tier 1)"));
+            twitterUserList.Tier2.ForEach(x => dict.Add(x, "(Tier 2)"));
+            twitterUserList.Tier3.ForEach(x => dict.Add(x, "(Tier 3)"));
+            twitterUserList.Tier4.ForEach(x => dict.Add(x, "(Tier 4)"));
+
+            return dict;
         }
     }
 }
