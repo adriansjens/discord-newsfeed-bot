@@ -6,15 +6,18 @@ namespace Shared.Services
     {
         string Get(string key);
         void Set(string key, string value);
+        void Dispose();
     }
 
     public class CacheService : ICacheService
     {
+        private static ConnectionMultiplexer _connection;
         private IDatabase _cache;
 
         public CacheService(string connectionString)
         {
-            _cache = ConnectionMultiplexer.Connect(connectionString).GetDatabase();
+            _connection = ConnectionMultiplexer.Connect(connectionString); 
+            _cache = _connection.GetDatabase();
         }
 
         public string Get(string key)
@@ -25,6 +28,11 @@ namespace Shared.Services
         public void Set(string key, string value)
         {
             _cache.StringSet(key, value);
+        }
+
+        public void Dispose()
+        {
+            _connection?.Dispose();
         }
     }
 }

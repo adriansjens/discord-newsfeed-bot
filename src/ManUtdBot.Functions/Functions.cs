@@ -18,15 +18,15 @@ namespace ManUtdBot.Functions
         }
 
         [FunctionName("SyncNewsfeed")]
-        public async Task SyncNewsfeed([TimerTrigger("0 */2 * * * *")] TimerInfo myTimer, ILogger log, 
+        public async Task SyncNewsfeed([TimerTrigger("0 */2 * * * *", RunOnStartup = true)] TimerInfo myTimer, ILogger log, 
             ExecutionContext context)
         {
             var secretService = _services.GetRequiredService<ISecretService>();
-            var botToken = secretService.GetSecret("discord-bot-client-secret-manutd");
+            var botToken = secretService.GetSecret("discord-bot-secret-muppetiers");
 
             var discordService = _services.GetRequiredService<IDiscordService>();
             discordService.SetBotAuth(botToken);
-
+            await discordService.ConnectAsync();
             try
             {
                 await discordService.SendMessageToLogChannel(new List<string> {"Executing SyncNewsfeed for ManUtdBot"});
@@ -35,6 +35,8 @@ namespace ManUtdBot.Functions
                 var botService = new BotSyncService.Sync(twitterService, secretService, discordService);
 
                 await botService.SyncData(context);
+
+                discordService.DisposeClient();
             }
 
             catch (Exception e)

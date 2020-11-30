@@ -33,11 +33,11 @@ namespace ManUtdBot.Functions
                 client.BaseAddress = new Uri(configuration["TwitterApiBaseAddress"]);
             }).AddPolicyHandler(GetRetryPolicy());
 
-            builder.Services.AddSingleton<ITwitterApiService, TwitterApiService>(provider => new TwitterApiService(
+            builder.Services.AddTransient<ITwitterApiService, TwitterApiService>(provider => new TwitterApiService(
                 provider.GetRequiredService<IHttpClientFactory>().CreateClient("TwitterApiHttpClient"),
                 provider.GetRequiredService<ICacheService>()));
 
-            builder.Services.AddSingleton<ISecretService, SecretService>(provider =>
+            builder.Services.AddTransient<ISecretService, SecretService>(provider =>
             {
                 var azureKeyVaultUrl = configuration["AzureKeyVault"];
                 TokenCredential credentials = new DefaultAzureCredential();
@@ -53,10 +53,9 @@ namespace ManUtdBot.Functions
             });
 
             var redisConnectionString = configuration["RedisConnectionString"];
-            builder.Services.AddSingleton<ICacheService, CacheService>(provider =>
+            builder.Services.AddTransient<ICacheService, CacheService>(provider =>
                 new CacheService(redisConnectionString));
 
-            builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IDiscordService, DiscordService>();
         }
 
